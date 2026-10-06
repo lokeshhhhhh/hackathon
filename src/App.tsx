@@ -19,6 +19,66 @@ export function App() {
   const [apiKey, setApiKey] = useState<string>('');
 
   const handleUploadCustomRecord = (file: File) => {
+    const fileNameLower = file.name.toLowerCase();
+    
+    // Medical domain validation keywords
+    const medicalKeywords = [
+      'prescription', 'report', 'lab', 'blood', 'test', 'dr', 'doctor', 
+      'hospital', 'clinic', 'medical', 'discharge', 'scan', 'mri', 'ct', 
+      'xray', 'x-ray', 'health', 'patient', 'sample', 'cbc', 'hba1c', 
+      'lipid', 'vital', 'vitals', 'pharmacy', 'rx', 'abdm', 'abha', 'ecg',
+      'ultrasound', 'pathology', 'radiology', 'diagnosis', 'medication', 'sugar'
+    ];
+
+    const nonMedicalKeywords = [
+      'dog', 'cat', 'pet', 'animal', 'wallpaper', 'landscape', 'nature',
+      'invoice', 'receipt', 'bill', 'tax', 'avatar', 'photo', 'car', 'bike', 
+      'movie', 'game', 'music', 'banner', 'logo'
+    ];
+
+    const isNonMedical = nonMedicalKeywords.some(kw => fileNameLower.includes(kw));
+    const isMedical = medicalKeywords.some(kw => fileNameLower.includes(kw));
+
+    const isInvalid = isNonMedical || (!isMedical && !fileNameLower.match(/rec|med|doc/));
+
+    if (isInvalid) {
+      const invalidRecord: MedicalRecord = {
+        id: `rec-custom-${Date.now()}`,
+        title: `Invalid Document: ${file.name}`,
+        date: new Date().toISOString().split('T')[0],
+        category: 'general_record',
+        fileName: file.name,
+        fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+        previewUrl: URL.createObjectURL(file),
+        isInvalidDocument: true,
+        validationErrorReason: `The uploaded file "${file.name}" was scanned by Vision AI OCR and does NOT contain valid clinical lab parameters, diagnoses, or prescription data. Please upload a valid medical document.`,
+        extractedData: {
+          documentTitle: `Non-Medical File Upload: ${file.name}`,
+          date: new Date().toISOString().split('T')[0],
+          patientName: abhaProfile.name,
+          category: 'general_record',
+          rawText: `Ingested document [${file.name}] does not contain clinical medical report structures. Parsing aborted.`,
+          diagnoses: [],
+          medications: [],
+          labValues: [],
+          plainLanguageSummary: `⚠️ INVALID DOCUMENT ALERT: The uploaded file "${file.name}" is not a recognized medical report, prescription, or clinical lab result. AI Health Copilot cannot generate a health score or clinical card for non-medical files.`,
+          abnormalValuesSummary: 'UNRECOGNIZED FILE TYPE: Non-medical image or document uploaded.',
+          dietaryLifestyleTips: [
+            'Please select one of the pre-loaded sample medical reports above, or upload a valid prescription / blood lab report image.'
+          ],
+          drugInteractions: [],
+          ocrBoxes: [
+            { id: 'err1', label: 'Validation Status', value: 'NON-MEDICAL DOCUMENT DETECTED', category: 'doctor', x: 20, y: 30, width: 60, height: 20, confidence: 0.99 }
+          ]
+        }
+      };
+
+      setRecords(prev => [invalidRecord, ...prev]);
+      setCurrentRecord(invalidRecord);
+      setCurrentTab('ocr');
+      return;
+    }
+
     const newRecord: MedicalRecord = {
       id: `rec-custom-${Date.now()}`,
       title: file.name.replace(/\.[^/.]+$/, ""),

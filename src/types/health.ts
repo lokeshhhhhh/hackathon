@@ -106,6 +106,8 @@ export interface MedicalRecord {
   previewUrl: string;
   extractedData: ExtractedMedicalData;
   fhirBundle?: FHIRBundle;
+  isInvalidDocument?: boolean;
+  validationErrorReason?: string;
 }
 
 // FHIR R4 Minimal Schema

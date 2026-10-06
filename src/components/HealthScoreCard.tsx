@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   HeartPulse, 
   Printer, 
-  Stethoscope
+  Stethoscope,
+  AlertTriangle
 } from 'lucide-react';
 import type { MedicalRecord } from '../types/health';
 
@@ -12,6 +13,25 @@ interface HealthScoreCardProps {
 
 export const HealthScoreCard: React.FC<HealthScoreCardProps> = ({ currentRecord }) => {
   const [showDoctorModal, setShowDoctorModal] = useState(false);
+
+  if (currentRecord.isInvalidDocument) {
+    return (
+      <div className="bg-rose-950/40 border border-rose-500/40 p-6 rounded-2xl space-y-4">
+        <div className="flex items-center gap-3 text-rose-300">
+          <AlertTriangle className="w-6 h-6 text-rose-400 shrink-0 animate-pulse" />
+          <div>
+            <h3 className="text-base font-bold text-white">Non-Medical Document Alert</h3>
+            <p className="text-xs text-rose-200/90 mt-0.5">
+              {currentRecord.validationErrorReason || `The uploaded document "${currentRecord.fileName}" is not a recognized medical report or prescription.`}
+            </p>
+          </div>
+        </div>
+        <p className="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+          ℹ️ Health Index and Clinical Risk scoring are deactivated for non-medical files. Please upload a valid medical report or select a sample prescription from the OCR tab.
+        </p>
+      </div>
+    );
+  }
 
   const { extractedData } = currentRecord;
   const abnormalCount = extractedData.labValues.filter(l => l.status === 'high' || l.status === 'low' || l.status === 'critical').length;

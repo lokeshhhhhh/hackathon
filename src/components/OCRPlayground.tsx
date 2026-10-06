@@ -140,6 +140,35 @@ export const OCRPlayground: React.FC<OCRPlaygroundProps> = ({
             </div>
           </label>
         </div>
+
+        {/* Invalid Document Alert Banner */}
+        {currentRecord.isInvalidDocument && (
+          <div className="bg-rose-950/50 border border-rose-500/40 rounded-2xl p-5 flex items-start gap-4 animate-fade-in shadow-lg shadow-rose-950/20">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0">
+              <AlertTriangle className="w-6 h-6 animate-pulse" />
+            </div>
+            <div className="space-y-1.5 flex-1">
+              <h4 className="text-sm font-bold text-rose-200 flex items-center gap-2">
+                <span>Non-Medical Document Detected</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/30 text-rose-300 border border-rose-500/50 uppercase">
+                  Parsing Aborted
+                </span>
+              </h4>
+              <p className="text-xs text-rose-300/90 leading-relaxed">
+                {currentRecord.validationErrorReason || 'The uploaded file does not contain valid clinical lab report parameters, diagnoses, or prescriptions.'}
+              </p>
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <span className="text-xs font-semibold text-slate-300">Select a valid sample report:</span>
+                <button
+                  onClick={() => onSelectRecord(SAMPLE_MEDICAL_RECORDS[0])}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/20 text-rose-200 border border-rose-500/40 hover:bg-rose-500/30 transition-all shadow-sm"
+                >
+                  💊 Switch to Sample Prescription
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* OCR Document Inspection Grid */}
