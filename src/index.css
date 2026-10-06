@@ -107,3 +107,32 @@
   box-shadow: 0 0 15px #0ea5e9;
   animation: scan-line 2.5s infinite linear;
 }
+
+/* Print Styles for PDF Export */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  header, nav, button, .no-print {
+    display: none !important;
+  }
+
+  .glass-panel, .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+  }
+
+  h1, h2, h3, h4, p, span, div {
+    color: #0f172a !important;
+  }
+
+  .bg-slate-900, .bg-slate-950, .bg-slate-800 {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
+}
+

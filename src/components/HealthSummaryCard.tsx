@@ -15,7 +15,8 @@ import {
   Apple, 
   HelpCircle, 
   ChevronDown, 
-  ChevronUp
+  ChevronUp,
+  Printer
 } from 'lucide-react';
 import type { MedicalRecord, SupportedLanguage, LabValueItem } from '../types/health';
 import { getTranslation, getTranslatedSummary, speakText, stopSpeech } from '../services/aiHealthService';
@@ -47,6 +48,10 @@ export const HealthSummaryCard: React.FC<HealthSummaryCardProps> = ({
         setIsPlayingAudio(false);
       });
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   const getLabStatusBadge = (status: string) => {
@@ -90,27 +95,39 @@ export const HealthSummaryCard: React.FC<HealthSummaryCardProps> = ({
             </p>
           </div>
 
-          {/* Text to Speech Voice Synthesizer Button */}
-          <button
-            onClick={toggleAudio}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md ${
-              isPlayingAudio
-                ? 'bg-rose-500 text-white animate-pulse'
-                : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 hover:opacity-90 shadow-teal-500/20'
-            }`}
-          >
-            {isPlayingAudio ? (
-              <>
-                <VolumeX className="w-4 h-4" />
-                {getTranslation(selectedLanguage, 'stopAudio')}
-              </>
-            ) : (
-              <>
-                <Volume2 className="w-4 h-4" />
-                {getTranslation(selectedLanguage, 'listenSummary')}
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Print / Export PDF Button */}
+            <button
+              onClick={handlePrint}
+              className="px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-slate-800/90 text-slate-200 hover:text-white hover:bg-slate-700/80 border border-slate-700/60 transition-all shadow-sm"
+              title="Print or Save as PDF Report"
+            >
+              <Printer className="w-4 h-4 text-cyan-400" />
+              <span>Print / Save PDF</span>
+            </button>
+
+            {/* Text to Speech Voice Synthesizer Button */}
+            <button
+              onClick={toggleAudio}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md ${
+                isPlayingAudio
+                  ? 'bg-rose-500 text-white animate-pulse'
+                  : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 hover:opacity-90 shadow-teal-500/20'
+              }`}
+            >
+              {isPlayingAudio ? (
+                <>
+                  <VolumeX className="w-4 h-4" />
+                  {getTranslation(selectedLanguage, 'stopAudio')}
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-4 h-4" />
+                  {getTranslation(selectedLanguage, 'listenSummary')}
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Plain Language Summary Paragraph with Medical Glossary Tooltips */}
