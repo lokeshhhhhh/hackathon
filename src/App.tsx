@@ -31,7 +31,7 @@ export function App() {
 
     const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
     const isImage = file.type.startsWith('image/');
-    const previewUrl = isImage ? URL.createObjectURL(file) : '/sample_blood_lab_report.png';
+    const previewUrl = isImage ? URL.createObjectURL(file) : `${import.meta.env.BASE_URL}sample_blood_lab_report.png`;
 
     const newRecord: MedicalRecord = {
       id: `rec-custom-${Date.now()}`,

@@ -30,7 +30,7 @@ export const SAMPLE_MEDICAL_RECORDS: MedicalRecord[] = [
     category: 'prescription',
     fileName: 'dr_sharma_bilingual_prescription.png',
     fileSize: '1.2 MB',
-    previewUrl: '/sample_medical_prescription.png',
+    previewUrl: `${import.meta.env.BASE_URL}sample_medical_prescription.png`,
     extractedData: {
       documentTitle: 'Outpatient Clinical Prescription',
       date: '2026-09-28',
@@ -158,7 +158,7 @@ Advice / परहेज:
     category: 'lab_report',
     fileName: 'max_healthcare_cbc_metabolic_report.pdf',
     fileSize: '2.4 MB',
-    previewUrl: '/sample_blood_lab_report.png',
+    previewUrl: `${import.meta.env.BASE_URL}sample_blood_lab_report.png`,
     extractedData: {
       documentTitle: 'Comprehensive Blood Diagnostic Panel',
       date: '2026-09-25',
@@ -304,7 +304,7 @@ HDL (Good Cholesterol)      38          mg/dL      > 40              LOW`,
     category: 'discharge_summary',
     fileName: 'fortis_cardiac_discharge_summary.pdf',
     fileSize: '3.1 MB',
-    previewUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format&fit=crop&q=60',
+    previewUrl: `${import.meta.env.BASE_URL}sample_blood_lab_report.png`,
     extractedData: {
       documentTitle: 'Inpatient Hospital Discharge Summary',
       date: '2026-08-14',

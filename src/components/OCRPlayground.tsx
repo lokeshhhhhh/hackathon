@@ -202,7 +202,7 @@ export const OCRPlayground: React.FC<OCRPlaygroundProps> = ({
                 src={currentRecord.previewUrl} 
                 alt="Medical Record"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/sample_blood_lab_report.png';
+                  (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}sample_blood_lab_report.png`;
                 }}
                 className="max-h-[480px] w-auto max-w-full object-contain rounded-lg shadow-2xl opacity-90 filter brightness-95 contrast-105"
               />
