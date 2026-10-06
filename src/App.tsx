@@ -21,126 +21,95 @@ export function App() {
   const handleUploadCustomRecord = (file: File) => {
     const fileNameLower = file.name.toLowerCase();
     
-    // Medical domain validation keywords
-    const medicalKeywords = [
-      'prescription', 'report', 'lab', 'blood', 'test', 'dr', 'doctor', 
-      'hospital', 'clinic', 'medical', 'discharge', 'scan', 'mri', 'ct', 
-      'xray', 'x-ray', 'health', 'patient', 'sample', 'cbc', 'hba1c', 
-      'lipid', 'vital', 'vitals', 'pharmacy', 'rx', 'abdm', 'abha', 'ecg',
-      'ultrasound', 'pathology', 'radiology', 'diagnosis', 'medication', 'sugar'
-    ];
-
-    const nonMedicalKeywords = [
-      'dog', 'cat', 'pet', 'animal', 'wallpaper', 'landscape', 'nature',
-      'invoice', 'receipt', 'bill', 'tax', 'avatar', 'photo', 'car', 'bike', 
-      'movie', 'game', 'music', 'banner', 'logo'
-    ];
-
-    const isNonMedical = nonMedicalKeywords.some(kw => fileNameLower.includes(kw));
-    const isMedical = medicalKeywords.some(kw => fileNameLower.includes(kw));
-
-    const isInvalid = isNonMedical || (!isMedical && !fileNameLower.match(/rec|med|doc/));
-
-    if (isInvalid) {
-      const invalidRecord: MedicalRecord = {
-        id: `rec-custom-${Date.now()}`,
-        title: `Invalid Document: ${file.name}`,
-        date: new Date().toISOString().split('T')[0],
-        category: 'general_record',
-        fileName: file.name,
-        fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-        previewUrl: URL.createObjectURL(file),
-        isInvalidDocument: true,
-        validationErrorReason: `The uploaded file "${file.name}" was scanned by Vision AI OCR and does NOT contain valid clinical lab parameters, diagnoses, or prescription data. Please upload a valid medical document.`,
-        extractedData: {
-          documentTitle: `Non-Medical File Upload: ${file.name}`,
-          date: new Date().toISOString().split('T')[0],
-          patientName: abhaProfile.name,
-          category: 'general_record',
-          rawText: `Ingested document [${file.name}] does not contain clinical medical report structures. Parsing aborted.`,
-          diagnoses: [],
-          medications: [],
-          labValues: [],
-          plainLanguageSummary: `⚠️ INVALID DOCUMENT ALERT: The uploaded file "${file.name}" is not a recognized medical report, prescription, or clinical lab result. AI Health Copilot cannot generate a health score or clinical card for non-medical files.`,
-          abnormalValuesSummary: 'UNRECOGNIZED FILE TYPE: Non-medical image or document uploaded.',
-          dietaryLifestyleTips: [
-            'Please select one of the pre-loaded sample medical reports above, or upload a valid prescription / blood lab report image.'
-          ],
-          drugInteractions: [],
-          ocrBoxes: [
-            { id: 'err1', label: 'Validation Status', value: 'NON-MEDICAL DOCUMENT DETECTED', category: 'doctor', x: 20, y: 30, width: 60, height: 20, confidence: 0.99 }
-          ]
-        }
-      };
-
-      setRecords(prev => [invalidRecord, ...prev]);
-      setCurrentRecord(invalidRecord);
-      setCurrentTab('ocr');
-      return;
+    // Determine category based on filename keywords
+    let docCategory: MedicalRecord['category'] = 'lab_report';
+    if (fileNameLower.includes('prescription') || fileNameLower.includes('rx') || fileNameLower.includes('med')) {
+      docCategory = 'prescription';
+    } else if (fileNameLower.includes('discharge') || fileNameLower.includes('summary')) {
+      docCategory = 'discharge_summary';
     }
+
+    const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+    const isImage = file.type.startsWith('image/');
+    const previewUrl = isImage ? URL.createObjectURL(file) : '/sample_blood_lab_report.png';
 
     const newRecord: MedicalRecord = {
       id: `rec-custom-${Date.now()}`,
-      title: file.name.replace(/\.[^/.]+$/, ""),
+      title: cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1),
       date: new Date().toISOString().split('T')[0],
-      category: 'lab_report',
+      category: docCategory,
       fileName: file.name,
-      fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      previewUrl: URL.createObjectURL(file),
+      fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+      previewUrl: previewUrl,
       extractedData: {
-        documentTitle: `Uploaded Record: ${file.name}`,
+        documentTitle: `Ingested Document: ${cleanTitle}`,
         date: new Date().toISOString().split('T')[0],
-        doctorName: 'Dr. Custom Provider, MD',
-        facilityName: 'Personal Health Repository Ingestion',
+        doctorName: 'Dr. Attending Specialist, MD',
+        facilityName: 'Personal Health Repository (OCR Ingested)',
         patientName: abhaProfile.name,
         patientAge: 44,
         patientGender: abhaProfile.gender,
-        category: 'lab_report',
-        rawText: `Ingested custom medical record file: ${file.name}. OCR analysis parsed 4 parameters.`,
+        category: docCategory,
+        rawText: `Ingested medical document: ${file.name}. Visual OCR Vision pipeline processed structure & extract clinical entities.`,
         diagnoses: [
           {
             id: 'd-c1',
-            condition: 'Routine Medical Monitoring',
+            condition: 'Ingested Clinical Record Monitoring',
             severity: 'mild',
             status: 'active',
-            plainDescription: 'Ingested document uploaded for personal health track management.'
+            plainDescription: 'Ingested report successfully uploaded into ABDM Personal Health Locker.'
           }
         ],
         medications: [
           {
             id: 'm-c1',
-            name: 'Vitamin D3 60K IU',
-            dosage: '60,000 IU',
-            frequency: 'Once weekly',
-            timing: { morning: true, afternoon: false, evening: false, night: false },
-            duration: '8 Weeks',
-            instructions: 'Take with milk after morning breakfast.'
+            name: 'Metformin 500mg SR',
+            dosage: '500 mg',
+            frequency: '1-0-1',
+            timing: { morning: true, afternoon: false, evening: false, night: true },
+            duration: '30 Days',
+            instructions: 'Take with or right after meals.'
           }
         ],
         labValues: [
           {
             id: 'l-c1',
             parameter: 'Vitamin D (25-OH)',
-            value: 18.5,
+            value: 22.4,
             unit: 'ng/mL',
             referenceRange: '30 - 100 ng/mL',
             status: 'low',
             category: 'Vitamins & Minerals',
-            plainExplanation: 'Vitamin D is essential for bone density and immune regulation. 18.5 ng/mL is low.',
-            potentialCauses: ['Limited sun exposure', 'Dietary deficiency'],
-            questionsForDoctor: ['Should I take weekly 60K IU Vitamin D3 supplements?']
+            plainExplanation: 'Vitamin D level is 22.4 ng/mL, which is slightly below the target range of 30-100 ng/mL.',
+            potentialCauses: ['Low sunlight exposure', 'Dietary factors'],
+            questionsForDoctor: ['Should I take weekly Vitamin D3 supplements?']
+          },
+          {
+            id: 'l-c2',
+            parameter: 'HbA1c (Glycated Hemoglobin)',
+            value: 6.8,
+            unit: '%',
+            referenceRange: '< 5.7 %',
+            status: 'high',
+            category: 'Glycemic Control',
+            plainExplanation: 'HbA1c level of 6.8% indicates mild elevation in average blood sugar over the last 3 months.',
+            potentialCauses: ['Carbohydrate intake', 'Insulin sensitivity'],
+            questionsForDoctor: ['What dietary modifications can lower my HbA1c below 6.5%?']
           }
         ],
-        plainLanguageSummary: `Your uploaded document "${file.name}" was parsed successfully. Key finding: Low Vitamin D level (18.5 ng/mL). Weekly supplementation and morning sunlight exposure are recommended.`,
-        abnormalValuesSummary: 'ALERT: Vitamin D (18.5 ng/mL) is below optimal reference range (30-100 ng/mL).',
+        plainLanguageSummary: `Your uploaded document "${file.name}" was successfully analyzed by AI OCR. Key observations: HbA1c is 6.8% and Vitamin D is 22.4 ng/mL. Active medications and clinical biomarkers are indexed.`,
+        abnormalValuesSummary: 'SUMMARY: 2 biomarkers flagged (HbA1c 6.8% HIGH, Vitamin D 22.4 ng/mL LOW).',
         dietaryLifestyleTips: [
-          'Spend 15-20 minutes in morning sunlight daily.',
-          'Consume fortified dairy products, egg yolks, or fatty fish.'
+          'Maintain a low-glycemic index diet rich in green vegetables & whole grains.',
+          'Get 15-20 minutes of morning sunlight daily.'
         ],
         drugInteractions: [],
         ocrBoxes: [
-          { id: 'cb1', label: 'Document Name', value: file.name, category: 'date', x: 10, y: 15, width: 60, height: 10, confidence: 0.95 },
-          { id: 'cb2', label: 'Vitamin D', value: '18.5 ng/mL', category: 'lab_value', x: 15, y: 45, width: 50, height: 12, confidence: 0.92 }
+          { id: 'cb1', label: 'Patient Name', value: abhaProfile.name, category: 'date', x: 8, y: 12, width: 42, height: 8, confidence: 0.98 },
+          { id: 'cb2', label: 'Doctor', value: 'Dr. Attending Specialist', category: 'doctor', x: 55, y: 12, width: 38, height: 8, confidence: 0.95 },
+          { id: 'cb3', label: 'HbA1c', value: '6.8 %', category: 'lab_value', x: 10, y: 40, width: 35, height: 10, confidence: 0.94 },
+          { id: 'cb4', label: 'Vitamin D', value: '22.4 ng/mL', category: 'lab_value', x: 50, y: 40, width: 42, height: 10, confidence: 0.92 },
+          { id: 'cb5', label: 'Medication', value: 'Metformin 500mg', category: 'medication', x: 10, y: 65, width: 78, height: 12, confidence: 0.96 }
         ]
       }
     };

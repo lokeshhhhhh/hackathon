@@ -197,22 +197,25 @@ export const OCRPlayground: React.FC<OCRPlaygroundProps> = ({
             )}
 
             {/* Document Background Preview */}
-            <div className="relative w-full h-full p-4 flex justify-center">
+            <div className="relative w-full min-h-[440px] p-4 flex justify-center items-center bg-slate-900/60 rounded-xl">
               <img 
                 src={currentRecord.previewUrl} 
                 alt="Medical Record"
-                className="max-h-[480px] w-auto object-contain rounded-lg shadow-2xl opacity-80 filter brightness-90 contrast-105"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/sample_blood_lab_report.png';
+                }}
+                className="max-h-[480px] w-auto max-w-full object-contain rounded-lg shadow-2xl opacity-90 filter brightness-95 contrast-105"
               />
 
               {/* Bounding Box Highlights */}
               {extractedData.ocrBoxes.map((box) => {
                 const isActive = activeBoxId === box.id;
                 const categoryColors: Record<string, string> = {
-                  medication: 'border-teal-400 bg-teal-500/20 text-teal-200',
-                  lab_value: 'border-amber-400 bg-amber-500/20 text-amber-200',
-                  diagnosis: 'border-indigo-400 bg-indigo-500/20 text-indigo-200',
-                  date: 'border-cyan-400 bg-cyan-500/20 text-cyan-200',
-                  doctor: 'border-purple-400 bg-purple-500/20 text-purple-200'
+                  medication: 'border-teal-400 bg-teal-500/25 text-teal-200',
+                  lab_value: 'border-amber-400 bg-amber-500/25 text-amber-200',
+                  diagnosis: 'border-indigo-400 bg-indigo-500/25 text-indigo-200',
+                  date: 'border-cyan-400 bg-cyan-500/25 text-cyan-200',
+                  doctor: 'border-purple-400 bg-purple-500/25 text-purple-200'
                 };
 
                 return (
@@ -227,11 +230,11 @@ export const OCRPlayground: React.FC<OCRPlaygroundProps> = ({
                       width: `${box.width}%`,
                       height: `${box.height}%`
                     }}
-                    className={`border-2 rounded transition-all cursor-pointer z-10 flex items-start p-1 ${
-                      categoryColors[box.category] || 'border-teal-400 bg-teal-500/20'
-                    } ${isActive ? 'ring-4 ring-teal-400 scale-[1.02] z-20 shadow-lg' : 'opacity-80 hover:opacity-100'}`}
+                    className={`border-2 rounded-lg transition-all cursor-pointer z-10 flex items-start p-1 ${
+                      categoryColors[box.category] || 'border-teal-400 bg-teal-500/25'
+                    } ${isActive ? 'ring-4 ring-teal-400 scale-[1.02] z-20 shadow-xl shadow-teal-500/20' : 'opacity-85 hover:opacity-100'}`}
                   >
-                    <span className="text-[10px] font-bold px-1 py-0.2 bg-slate-950/80 rounded border border-slate-700 shadow whitespace-nowrap overflow-hidden text-ellipsis">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-slate-950/90 text-white rounded border border-slate-700 shadow whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
                       {box.label}: {box.value}
                     </span>
                   </div>
